@@ -1,0 +1,28 @@
+ssh -Y ssg441@hpc.nyu.edu 
+ssh -Y ssg441@dumbo.es.its.nyu.edu
+
+
+java -version 
+yarn classpath 
+javac -classpath `yarn classpath` -d . CountMapper.java 
+javac -classpath `yarn classpath` -d . CountReducer.java 
+javac -classpath `yarn classpath`:. -d . Count.java 
+jar -cvf count.jar *.class
+
+vi input
+
+
+hdfs dfs -ls / 
+hdfs dfs -ls /user 
+hdfs dfs -ls /user/ssg441
+hdfs dfs -mkdir /user/ssg441/class2
+hdfs dfs -put input /user/ssg441/class2/ 
+hdfs dfs -cat /user/ssg441/class2/input
+
+
+
+hadoop jar pagerank.jar PageRank /user/ssg441/class3/input /user/ssg441/class3/output
+
+
+hdfs dfs -ls /user/ssg441/class2/output 
+hdfs dfs -cat /user/ssg441/class2/output/part-r-00000 
