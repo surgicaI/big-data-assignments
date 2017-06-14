@@ -12,29 +12,25 @@ public class PageRank {
             System.exit(-1);
         }       
         int i =1;
-        int forExit = 1;    
-        StringBuilder inputPath = new StringBuilder(args[0]);
-        StringBuilder outputPath = new StringBuilder(args[1]);
-        while(i++ <= 3){
+        int exit_code = 0;    
+        String inputPath = args[0];
+        String outputPath = args[1];
+        while(i <= 3){
             Job job = new Job();
             job.setJarByClass(PageRank.class);
             job.setJobName("Page Rank");
             job.setNumReduceTasks(1); // 1 Reduce task 
-            FileInputFormat.addInputPath(job, new Path(inputPath.toString()));
-            FileOutputFormat.setOutputPath(job, new Path(outputPath.toString()));
+            FileInputFormat.addInputPath(job, new Path(inputPath));
+            FileOutputFormat.setOutputPath(job, new Path(outputPath+String.valueOf(i)));
             job.setMapperClass(PageRankMapper.class);
             job.setReducerClass(PageRankReducer.class);
             job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(Text.class);
-            while(true){
-                if(job.waitForCompletion(true)){
-                    forExit = 0;
-                    break;
-                }   
-            }
-            inputPath = new StringBuilder(outputPath.toString());
-            outputPath.append(String.valueOf(i));
+            exit_code = job.waitForCompletion(true) ? 0 : 1;
+            if(exit_code == 1) break;
+            inputPath = outputPath + String.valueOf(i);
+            i++;
         }
-        System.exit(forExit);
+        System.exit(exit_code);
     }
 }
