@@ -11,7 +11,7 @@ class MyStreamListener(tweepy.StreamListener):
     def on_data(self, data):
         with open('tweets-data', 'a') as handle:
             handle.write(data)
-        tweet = json.loads(data)['text']
+        tweet = json.loads(data)['text'] + '\n'
         with open('tweets-text', 'a') as handle:
             handle.write(tweet)
         return True
