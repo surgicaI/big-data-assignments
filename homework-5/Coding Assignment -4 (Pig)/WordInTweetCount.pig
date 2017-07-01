@@ -1,0 +1,14 @@
+line = LOAD 'Input.txt' AS (tweet:chararray);
+onlyLowerAlphabets = FOREACH line GENERATE LOWER(REPLACE(tweet,'[^a-zA-z\\s]+',' ')) as tweet;
+tokens = FOREACH onlyLowerAlphabets GENERATE TOKENIZE(tweet) as tweet;
+flatDisTweet = FOREACH tokens{distin = DISTINCT tweet; GENERATE FLATTEN(distin);};
+dump flatDisTweet;
+words = LOAD 'Words.txt' AS (wordArr:chararray);
+lowerWords = FOREACH words GENERATE wordArr, LOWER(wordArr) as lowKey;
+rightOuterJoin = JOIN flatDisTweet BY $0 RIGHT OUTER, lowerWords by $1;
+count = FOREACH rightOuterJoin GENERATE $1, ($0 is null?0:1);
+groupCnt =  GROUP count by $0;
+res = FOREACH groupCnt GENERATE group, SUM(count.$1);
+res = ORDER res BY $0;
+dump res;
+STORE res INTO 'result';
